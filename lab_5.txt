@@ -1,0 +1,117 @@
+class Room<Exit> {
+    
+    var value: Exit?
+    var left:  Room<Exit>?
+    var right:  Room<Exit>?
+    
+    init(_ isExit: Bool = false ) {
+        self.value = (isExit as! Exit)
+    }
+    
+    typealias Block = (Exit?) -> ()
+    
+    enum IterationType {
+        case DepthFirst
+        case BreadthFirst
+    }
+    
+    func iterator(_ type: IterationType) -> AnyIterator<Exit> {
+        var items = [Exit]()
+        
+        switch type {
+        case .DepthFirst:
+            depthFirst { items.append($0!) }
+        case .BreadthFirst:
+            breadthFirst { items.append($0!) }
+        }
+        return AnyIterator(items.makeIterator())
+    }
+    
+    private func depthFirst(_ body: Block) {
+        body(value)
+        left?.depthFirst(body)
+        right?.depthFirst(body)
+    }
+    
+    private func breadthFirst(_ body: Block) {
+        body(value)
+        if let l = left?.value, let r = right?.value {
+            body(l)
+            body(r)
+            left?.breadth(body)
+            right?.breadth(body)
+        }
+    }
+    
+    private func breadth(_ body: Block) {
+        if let l = left?.value, let r = right?.value {
+            body(l)
+            body(r)
+            left?.breadth(body)
+            right?.breadth(body)
+        }
+    }
+}
+
+func EscapeFromCaves() {
+    
+    let room = Room<Any>()
+    room.left =  Room()
+    room.right =  Room()
+    room.left?.left =  Room()
+    room.left?.right = Room()
+    room.right?.left = Room()
+    room.right?.right = Room()
+    room.left?.left?.left =  Room()
+    room.left?.left?.right =  Room()
+    room.left?.right?.left = Room()
+    room.left?.right?.right = Room()
+    room.right?.left?.left = Room()
+    room.right?.left?.right = Room(true)
+    room.right?.right?.left = Room()
+    room.right?.right?.right = Room()
+    
+    print("Поиск выхода: Обход в глубину")
+    findWayDepth(iterator: room.iterator(.DepthFirst))
+    
+    print("\nПоиск выхода: Обход в ширину")
+    findWayBreadth(iterator: room.iterator(.BreadthFirst))
+}
+
+func findWayDepth<Exit>(iterator: AnyIterator<Exit>) {
+    var time = 20
+    while case let item? = iterator.next() {
+        print("Не нашел выход")
+        time -= 2
+        if item as! Bool == true {
+        print("Выход найден. Осталось времени: \(time) мин.")
+            break
+        }
+        if time <= 0 {
+            print("Не успел найти выход")
+            break
+            
+        }
+    }
+    
+}
+
+func findWayBreadth<Exit>(iterator: AnyIterator<Exit>) {
+    var time = 20
+    while case let item? = iterator.next() {
+        print("Не нашел выход")
+        time -= 1
+        if item as! Bool == true {
+            print("Выход найден. Осталось времени: \(time) мин.")
+            break
+        }
+        if time <= 0 {
+            print("Не успел найти выход")
+            break
+            
+        }
+    }
+    
+}
+
+EscapeFromCaves()

@@ -1,0 +1,173 @@
+import Foundation
+
+enum IphoneModels: String {
+    case iphone12 = "iphone 12"
+    case mini = "iphone 12 mini"
+    case pro = "iphone 12 Pro"
+    case promax = "iphone 12 Pro Max"
+    
+}
+
+struct Iphone {
+    let model: IphoneModels
+    var diagonal = Double()
+    var width = Double()
+    var height = Double()
+    var memory = Int()
+    var color = String()
+    
+    init(_ model: IphoneModels) {
+        self.model = model
+    }
+    
+    func display(){
+    print("Модель: \(self.model.rawValue), высота: \(self.height), ширина: \(self.width), диагональ: \(self.diagonal), память: \(self.memory), цвет: \(self.color)")
+    }
+}
+
+
+
+protocol iphoneBuilder {
+    func reset()
+    func stepA()
+    func stepB(memory: Int, color: String)
+}
+
+class Director {
+    init(builder: iphoneBuilder) {
+        self.builder = builder
+    }
+    var builder: iphoneBuilder
+    
+    func build(memory: Int, color: String) {
+        builder.reset()
+        builder.stepA()
+        builder.stepB(memory: memory, color: color)
+    }
+    func swap(builder: iphoneBuilder) {
+        self.builder = builder
+    }
+}
+
+class Iphone12Builder: iphoneBuilder {
+    
+    var iphone = Iphone(.iphone12)
+    
+    func reset() {
+        iphone = Iphone(.iphone12)
+    }
+    
+    func stepA() {
+        iphone.height = 147.7
+        iphone.width = 71.6
+        iphone.diagonal = 6.1
+    }
+    
+    func stepB(memory: Int, color: String) {
+        iphone.color = color
+        iphone.memory = memory
+    }
+    
+    func getResult() -> Iphone {
+        return iphone
+    }
+}
+
+class Iphone12ProBuilder: iphoneBuilder {
+    
+    var iphone = Iphone(.pro)
+    
+    func reset() {
+        iphone = Iphone(.pro)
+    }
+    
+    func stepA() {
+        iphone.height = 147.7
+        iphone.width = 71.6
+        iphone.diagonal = 6.1
+    }
+    
+    func stepB(memory: Int, color: String) {
+        iphone.color = color
+        iphone.memory = memory
+    }
+    
+    func getResult() -> Iphone {
+        return iphone
+    }
+}
+
+class Iphone12ProMaxBuilder: iphoneBuilder {
+    
+    var iphone = Iphone(.promax)
+    
+    func reset() {
+        iphone = Iphone(.promax)
+    }
+    
+    func stepA() {
+        iphone.height = 160.8
+        iphone.width = 78.1
+        iphone.diagonal = 6.7
+    }
+    
+    func stepB(memory: Int, color: String) {
+        iphone.color = color
+        iphone.memory = memory
+    }
+    
+    func getResult() -> Iphone {
+        return iphone
+    }
+}
+
+class Iphone12MiniBuilder: iphoneBuilder {
+    
+    var iphone = Iphone(.mini)
+    
+    func reset() {
+        iphone = Iphone(.mini)
+    }
+    
+    func stepA() {
+        iphone.height = 130.8
+        iphone.width = 63.8
+        iphone.diagonal = 5.4
+    }
+    
+    func stepB(memory: Int, color: String) {
+        iphone.color = color
+        iphone.memory = memory
+    }
+    
+    func getResult() -> Iphone {
+        return iphone
+    }
+}
+
+
+let i = Iphone12Builder()
+let p = Iphone12ProBuilder()
+let pm = Iphone12ProMaxBuilder()
+let m = Iphone12MiniBuilder()
+
+let director = Director(builder: i)
+
+director.build(memory: 128, color:"product red")
+var iphone = i.getResult()
+iphone.display()
+
+director.swap(builder: p)
+director.build(memory: 512, color:"white")
+iphone = p.getResult()
+iphone.display()
+
+director.swap(builder: pm)
+director.build(memory: 512, color:"black")
+iphone = pm.getResult()
+iphone.display()
+
+director.swap(builder: m)
+director.build(memory: 256, color:"pink")
+iphone = m.getResult()
+iphone.display()
